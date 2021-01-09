@@ -1,0 +1,24 @@
+<h3>TODO List</h3>
+<div class="input-group">
+  <input class="form-control" (keyup.enter)="isEdit ? confirmTodo(newTodo) : addTodo(newTodo)" [(ngModel)]="newTodo">
+  <button class="btn btn-success" (click)="addTodo(newTodo)" *ngIf="!isEdit">
+    Ajouter
+  </button>
+  <button class="btn btn-info" (click)="confirmTodo(newTodo)" *ngIf="isEdit">
+    Modifier
+  </button>
+</div>
+<br/>
+<div *ngFor="let todo of (todos$ | async)">
+  {{ todo.name }}
+  <div class="btn-group btn-group-sm float-right">
+    <button class="btn btn-info" (click)="updateTodo(todo)">
+      <span class="fa fa-edit"></span>
+    </button>
+    <button class="btn btn-danger" (click)="deleteTodo(todo)">
+      <span class="fa fa-trash"></span>
+    </button>
+  </div>
+  <br>
+  <br>
+</div>

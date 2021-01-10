@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 
 import { Todo } from '../todo.model';
 import * as fromTodoReducer from '../todo.reducers';
-import {tap} from "rxjs/internal/operators";
+import * as todoActions from '../todo.actions';
 
 @Component({
   selector: 'app-todo-list',
@@ -21,14 +21,12 @@ export class TodoListComponent implements OnInit {
   constructor(private store: Store<fromTodoReducer.State>) {}
 
   ngOnInit(): void {
-    this.todoState$ = this.store.pipe(select('todo'), tap(a => {
-      debugger;
-    }));
+    this.todoState$ = this.store.pipe(select('todo'));
   }
 
   addTodo(newTodo: string): void {
     const todo: Todo = new Todo(newTodo);
-    this.store.dispatch({ type: 'ADD TODO', payload: todo });
+    this.store.dispatch(new todoActions.AddTodo(todo));
   }
 
   updateTodo(index: number, todo: Todo): void {
@@ -40,12 +38,12 @@ export class TodoListComponent implements OnInit {
 
   confirmTodo(newTodoInput: string): void {
     this.selectedTodo.name = newTodoInput;
-    this.store.dispatch({ type: 'UPDATE TODO', payload: { id: this.index, updatedTodo: this.selectedTodo } });
+    this.store.dispatch(new todoActions.UpdateTodo({ id: this.index, updatedTodo: this.selectedTodo }));
     this.isEdit = false;
     this.newTodo = '';
   }
 
   deleteTodo(id: number): void {
-    this.store.dispatch({ type: 'DELETE TODO', payload: id });
+    this.store.dispatch(new todoActions.DeleteTodo(id));
   }
 }

@@ -1,49 +1,33 @@
+import { Action } from '@ngrx/store';
+
 import { Todo } from './todo.model';
 
-export interface State {
-  todos: Array<Todo>;
-  lastUpdate: string;
+export enum TodoActionsTypes {
+  ADD_TODO = 'ADD_TODO',
+  UPDATE_TODO = 'UPDATE_TODO',
+  DELETE_TODO = 'DELETE_TODO',
+  DELETE_ALL_TODOS = 'DELETE_ALL_TODOS'
 }
 
-const initialState: State = {
-  todos: [new Todo('Learn Java'), new Todo('Learn Angular')],
-  lastUpdate: new Date().toString()
-};
+export class AddTodo implements Action {
+  readonly type = TodoActionsTypes.ADD_TODO;
 
-export function todoReducer(state = initialState, action): State {
-  switch (action.type) {
-    case 'ADD TODO':
-      return {
-        ...state,
-        lastUpdate: new Date().toString(),
-        todos: [...state.todos, action.payload]
-      };
-    case 'DELETE TODO':
-      return {
-        ...state,
-        todos: [...state.todos].filter((todo: Todo) => todo.id !== action.payload),
-        lastUpdate: new Date().toString()
-      };
-    case 'UPDATE TODO':
-      const todo: Todo = state.todos[action.payload.id];
-      const updatedTodo: any = {
-        todo,
-        ...action.payload.updatedTodo
-      };
-      const todos: Array<Todo> = [...state.todos];
-      todos[action.payload.id] = updatedTodo;
-      return {
-        ...state,
-        todos,
-        lastUpdate: new Date().toString()
-      };
-    case 'DELETE ALL TODOS':
-      return {
-        ...state,
-        lastUpdate: new Date().toString(),
-        todos: []
-      };
-    default:
-      return state;
-  }
+  constructor(public payload: Todo) {}
 }
+
+export class UpdateTodo implements Action {
+  readonly type = TodoActionsTypes.UPDATE_TODO;
+
+  constructor(public payload: { id: number; updatedTodo: Todo }) {}
+}
+
+export class DeleteTodo implements Action {
+  readonly type = TodoActionsTypes.DELETE_TODO;
+  constructor(public payload: number) {}
+}
+
+export class DeleteAllTodos implements Action {
+  readonly type = TodoActionsTypes.DELETE_ALL_TODOS;
+}
+
+export type TodoActions = AddTodo | DeleteTodo | UpdateTodo | DeleteAllTodos;

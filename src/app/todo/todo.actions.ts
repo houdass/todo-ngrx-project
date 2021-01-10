@@ -4,9 +4,30 @@ import { Update } from '@ngrx/entity';
 import { Todo } from './todo.model';
 
 export enum TodoActionsTypes {
+  GET_TODOS = 'GET_TODOS',
+  GET_TODOS_SUCCESS = 'GET_TODOS_SUCCESS',
+  GET_TODOS_ERROR = 'GET_TODOS_ERROR',
   ADD_TODO = 'ADD_TODO',
   UPDATE_TODO = 'UPDATE_TODO',
   DELETE_TODO = 'DELETE_TODO',
+}
+
+export class GetTodos implements Action {
+  readonly type = TodoActionsTypes.GET_TODOS;
+
+  constructor() {}
+}
+
+export class GetTodosSuccess implements Action {
+  readonly type = TodoActionsTypes.GET_TODOS_SUCCESS;
+
+  constructor(public payload: Array<Todo>) {}
+}
+
+export class GetTodosError implements Action {
+  readonly type = TodoActionsTypes.GET_TODOS_ERROR;
+
+  constructor(public payload: string) {}
 }
 
 export class AddTodo implements Action {
@@ -26,4 +47,4 @@ export class DeleteTodo implements Action {
   constructor(public payload: number) {}
 }
 
-export type TodoActions = AddTodo | DeleteTodo | UpdateTodo;
+export type TodoActions = GetTodos | GetTodosSuccess | GetTodosError | AddTodo | DeleteTodo | UpdateTodo;

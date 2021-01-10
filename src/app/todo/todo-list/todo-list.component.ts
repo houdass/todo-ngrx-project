@@ -41,7 +41,7 @@ export class TodoListComponent implements OnInit {
 
   confirmTodo(newTodoInput: string): void {
     this.selectedTodo.name = newTodoInput;
-    this.store.dispatch(new fromTodoActions.UpdateTodo({ id: this.index, updatedTodo: this.selectedTodo }));
+    this.store.dispatch(new fromTodoActions.UpdateTodo({ todo: { id: this.index, changes: this.selectedTodo } }));
     this.isEdit = false;
     this.newTodo = '';
   }

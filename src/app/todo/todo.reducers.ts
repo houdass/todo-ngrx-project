@@ -1,43 +1,42 @@
-import { Todo } from './todo.model';
-import { TodoActionsTypes } from './todo.actions';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 
-export interface State {
-  todos: Array<Todo>;
+import { Todo } from './todo.model';
+import { TodoActions, TodoActionsTypes } from './todo.actions';
+
+export interface State extends EntityState<Todo> {
   lastUpdate: string;
 }
 
-const initialState: State = {
-  todos: [new Todo('Learn Java'), new Todo('Learn Angular')],
+export const todoAdapter: EntityAdapter<Todo> = createEntityAdapter<Todo>();
+
+const defaultTodos: any = {
+  ids: [0, 1],
+  entities: {
+    0: new Todo('Learn Angular', 0),
+    1: new Todo('Learn Java', 1),
+  },
   lastUpdate: new Date().toString(),
 };
 
-export function todoReducer(state = initialState, action): State {
+const initialState: State = todoAdapter.getInitialState(defaultTodos);
+
+export function todoReducer(state = initialState, action: TodoActions): State {
   switch (action.type) {
     case TodoActionsTypes.ADD_TODO:
-      return {
+      return todoAdapter.addOne(action.payload, {
         ...state,
         lastUpdate: new Date().toString(),
-        todos: [...state.todos, action.payload],
-      };
-    case TodoActionsTypes.DELETE_TODO:
-      return {
-        ...state,
-        todos: [...state.todos].filter((todo: Todo) => todo.id !== action.payload),
-        lastUpdate: new Date().toString(),
-      };
+      });
     case TodoActionsTypes.UPDATE_TODO:
-      const todo: Todo = state.todos[action.payload.id];
-      const updatedTodo: any = {
-        todo,
-        ...action.payload.updatedTodo,
-      };
-      const todos: Array<Todo> = [...state.todos];
-      todos[action.payload.id] = updatedTodo;
-      return {
+      return todoAdapter.updateOne(action.payload.todo, {
         ...state,
-        todos,
         lastUpdate: new Date().toString(),
-      };
+      });
+    case TodoActionsTypes.DELETE_TODO:
+      return todoAdapter.removeOne(action.payload, {
+        ...state,
+        lastUpdate: new Date().toString(),
+      });
     default:
       return state;
   }

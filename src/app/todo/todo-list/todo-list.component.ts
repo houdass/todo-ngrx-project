@@ -1,55 +1,51 @@
 import { Component, OnInit } from '@angular/core';
+
+import {select, Store} from "@ngrx/store";
+import { Observable } from "rxjs";
+
 import { Todo } from '../todo.model';
-import { TodoService } from '../todo.service';
+import * as fromTodoReducer from '../todo.reducers';
+import {tap} from "rxjs/internal/operators";
 
 @Component({
   selector: 'app-todo-list',
-  templateUrl: './todo-list.component.html',
+  templateUrl: './todo-list.component.html'
 })
 export class TodoListComponent implements OnInit {
-  todos$: any;
   isEdit = false;
   newTodo: string;
+  index: number;
   selectedTodo: Todo;
+  todoState$: Observable<fromTodoReducer.State>;
 
-  constructor(private todoService: TodoService) {}
+  constructor(private store: Store<fromTodoReducer.State>) {}
 
   ngOnInit(): void {
-    this.getTodos();
-  }
-
-  getTodos(): void {
-    this.todos$ = this.todoService.getAll();
+    this.todoState$ = this.store.pipe(select('todo'), tap(a => {
+      debugger;
+    }));
   }
 
   addTodo(newTodo: string): void {
     const todo: Todo = new Todo(newTodo);
-    this.todoService.add(todo).subscribe(() => {
-      console.info(`Todo: ${todo.name} was successfully created.`);
-      this.getTodos();
-    });
+    this.store.dispatch({ type: 'ADD TODO', payload: todo });
   }
 
-  updateTodo(todo: Todo): void {
+  updateTodo(index: number, todo: Todo): void {
     this.isEdit = true;
     this.newTodo = todo.name;
     this.selectedTodo = todo;
+    this.index = index;
   }
 
   confirmTodo(newTodoInput: string): void {
     this.selectedTodo.name = newTodoInput;
-    this.todoService.update(this.selectedTodo).subscribe(() => {
-      console.info(`Todo: ${this.selectedTodo.name} was successfully updated.`);
-      this.getTodos();
-    });
+    this.store.dispatch({ type: 'UPDATE TODO', payload: { id: this.index, updatedTodo: this.selectedTodo } });
     this.isEdit = false;
     this.newTodo = '';
   }
 
-  deleteTodo(todo: Todo): void {
-    this.todoService.delete(todo.id).subscribe(() => {
-      console.info(`Todo with ID: ${todo.name} was successfully deleted.`);
-      this.getTodos();
-    });
+  deleteTodo(id: number): void {
+    this.store.dispatch({ type: 'DELETE TODO', payload: id });
   }
 }

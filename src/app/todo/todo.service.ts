@@ -1,40 +1,33 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
-import { Observable } from 'rxjs';
-
 import { Todo } from './todo.model';
-
-const PROTOCOL = 'http';
-const PORT = 3000;
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TodoService {
-  baseUrl: string;
+  todos = [new Todo('Learn Java'), new Todo('Learn Angular')];
+  todosChanged = new BehaviorSubject(this.todos);
 
-  constructor(private http: HttpClient) {
-    this.baseUrl = `${PROTOCOL}://${location.hostname}:${PORT}/`;
+  constructor() {}
+
+  add(todo: Todo) {
+    this.todos.push(todo);
+    this.todosChanged.next(this.todos.slice());
   }
 
-  getAll(): Observable<Todo[]> {
-    return this.http.get<Todo[]>(`${this.baseUrl}todos`);
+  delete(index: number): void {
+    this.todos.splice(index, 1);
+    this.todosChanged.next(this.todos.slice());
   }
 
-  add(todo: Todo): Observable<Todo> {
-    return this.http.post<Todo>(`${this.baseUrl}todos`, todo);
+  update(index: number, todo: Todo): void {
+    this.todos[index] = todo;
+    this.todosChanged.next(this.todos.slice());
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}todos/${id}`);
-  }
-
-  update(todo: Todo): Observable<Todo> {
-    return this.http.put<Todo>(`${this.baseUrl}todos/${todo.id}`, todo);
-  }
-
-  deleteAll(): Observable<any> {
-    return this.http.delete(`${this.baseUrl}todos`);
+  deleteAll(): void {
+    this.todos = [];
+    this.todosChanged.next(this.todos.slice());
   }
 }

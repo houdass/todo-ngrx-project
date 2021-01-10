@@ -8,23 +8,22 @@
     Modifier
   </button>
 </div>
-<br/>
+<br>
 
-<ng-container *ngIf="todoState$ | async as todoState">
-  <div *ngFor="let todo of todoState.todos; index as i">
-    {{ todo.name }}
-    <div class="btn-group btn-group-sm float-right">
-      <button class="btn btn-info" (click)="updateTodo(todo.id, todo)">
-        <span class="fa fa-edit"></span>
-      </button>
-      <button class="btn btn-danger" (click)="deleteTodo(todo.id)">
-        <span class="fa fa-trash"></span>
-      </button>
-    </div>
-    <br>
-    <br>
+<div *ngFor="let todo of todos$ | async; index as i">
+  {{ todo.name }}
+  <div class="btn-group btn-group-sm float-right">
+    <button class="btn btn-info" (click)="updateTodo(todo.id, todo)">
+      <span class="fa fa-edit"></span>
+    </button>
+    <button class="btn btn-danger" (click)="deleteTodo(todo.id)">
+      <span class="fa fa-trash"></span>
+    </button>
   </div>
-  <h3 *ngIf="!todoState.todos.length">
-    Aucun TODO trouvé, veuillez en rajouter.
-  </h3>
-</ng-container>
+  <br>
+  <br>
+</div>
+<h3 *ngIf="(count$ | async) === 0">
+  Aucun TODO trouvé, veuillez en rajouter.
+</h3>
+

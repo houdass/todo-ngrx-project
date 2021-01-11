@@ -1,50 +1,18 @@
-import { Action } from '@ngrx/store';
+import { Action, createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 
 import { Todo } from './todo.model';
 
-export enum TodoActionsTypes {
-  GET_TODOS = 'GET_TODOS',
-  GET_TODOS_SUCCESS = 'GET_TODOS_SUCCESS',
-  GET_TODOS_ERROR = 'GET_TODOS_ERROR',
-  ADD_TODO = 'ADD_TODO',
-  UPDATE_TODO = 'UPDATE_TODO',
-  DELETE_TODO = 'DELETE_TODO',
-}
+export const getTodos = createAction('GET_TODOS');
 
-export class GetTodos implements Action {
-  readonly type = TodoActionsTypes.GET_TODOS;
+export const getTodosSuccess = createAction('GET_TODOS_SUCCESS', props<{ todos: Todo[] }>());
 
-  constructor() {}
-}
+export const getTodosError = createAction('GET_TODOS_ERROR', props<{ error: string }>());
 
-export class GetTodosSuccess implements Action {
-  readonly type = TodoActionsTypes.GET_TODOS_SUCCESS;
+export const addTodo = createAction('ADD_TODO', props<{ todo: Todo }>());
 
-  constructor(public payload: Array<Todo>) {}
-}
+export const updateTodo = createAction('UPDATE_TODO', props<{ todo: Update<Todo> }>());
 
-export class GetTodosError implements Action {
-  readonly type = TodoActionsTypes.GET_TODOS_ERROR;
+export const deleteTodo = createAction('DELETE_TODO', props<{ id: number }>());
 
-  constructor(public payload: string) {}
-}
-
-export class AddTodo implements Action {
-  readonly type = TodoActionsTypes.ADD_TODO;
-
-  constructor(public payload: Todo) {}
-}
-
-export class UpdateTodo implements Action {
-  readonly type = TodoActionsTypes.UPDATE_TODO;
-
-  constructor(public payload: { todo: Update<Todo> }) {}
-}
-
-export class DeleteTodo implements Action {
-  readonly type = TodoActionsTypes.DELETE_TODO;
-  constructor(public payload: number) {}
-}
-
-export type TodoActions = GetTodos | GetTodosSuccess | GetTodosError | AddTodo | DeleteTodo | UpdateTodo;
+export const deleteAllTodos = createAction('DELETE_ALL_TODO');

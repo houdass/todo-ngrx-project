@@ -29,7 +29,7 @@ export class TodoListComponent implements OnInit {
 
   addTodo(newTodo: string): void {
     const todo: Todo = new Todo(newTodo);
-    this.store.dispatch(new fromTodoActions.AddTodo(todo));
+    this.store.dispatch(fromTodoActions.addTodo({ todo }));
   }
 
   updateTodo(index: number, todo: Todo): void {
@@ -40,13 +40,13 @@ export class TodoListComponent implements OnInit {
   }
 
   confirmTodo(newTodoInput: string): void {
-    this.selectedTodo.name = newTodoInput;
-    this.store.dispatch(new fromTodoActions.UpdateTodo({ todo: { id: this.index, changes: this.selectedTodo } }));
+    this.selectedTodo = { ...this.selectedTodo, name: newTodoInput };
+    this.store.dispatch(fromTodoActions.updateTodo({ todo: { id: this.index, changes: this.selectedTodo } }));
     this.isEdit = false;
     this.newTodo = '';
   }
 
   deleteTodo(id: number): void {
-    this.store.dispatch(new fromTodoActions.DeleteTodo(id));
+    this.store.dispatch(fromTodoActions.deleteTodo({ id }));
   }
 }

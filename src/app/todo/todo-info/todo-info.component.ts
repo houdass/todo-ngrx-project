@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import * as fromTodoReducer from '../todo.reducers';
 import * as fromTodoSelectors from '../todo.selectors';
+import { deleteAllTodos } from '../todo.actions';
 
 @Component({
   selector: 'app-todo-info',
@@ -19,5 +20,9 @@ export class TodoInfoComponent implements OnInit {
   ngOnInit(): void {
     this.lastUpdate$ = this.store.pipe(select(fromTodoSelectors.selectLastUpdate));
     this.count$ = this.store.pipe(select(fromTodoSelectors.selectTotal));
+  }
+
+  deleteAllTodos(): void {
+    this.store.dispatch(deleteAllTodos());
   }
 }

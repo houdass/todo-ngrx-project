@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 
-import * as fromTodoReducer from './todo/todo.reducers';
 import * as fromTodoActions from './todo/todo.actions';
+import * as fromRouterSelectors from './todo/router.selectors';
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  constructor(private store: Store<fromTodoReducer.State>) {
-    this.store.dispatch(new fromTodoActions.GetTodos());
+  constructor(private store: Store<any>) {
+    this.store.dispatch(fromTodoActions.getTodos());
+    this.store.pipe(select(fromRouterSelectors.selectUrl), tap(a => {
+      console.log('->', a);
+    })).subscribe();
   }
 }

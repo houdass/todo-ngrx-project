@@ -1,7 +1,17 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 
 import { Todo } from './todo.model';
-import { TodoActions, TodoActionsTypes } from './todo.actions';
+import {
+  addTodo,
+  deleteAllTodos,
+  deleteTodo,
+  getTodos,
+  getTodosError,
+  getTodosSuccess,
+  updateTodo,
+} from './todo.actions';
+import { Action, createReducer, on } from '@ngrx/store';
+import * as fromRouter from '@ngrx/router-store';
 
 export interface State extends EntityState<Todo> {
   lastUpdate: string;
@@ -19,45 +29,54 @@ const defaultTodos: any = {
 
 const initialState: State = todoAdapter.getInitialState(defaultTodos);
 
-export function todoReducer(state = initialState, action: TodoActions): State {
-  switch (action.type) {
-    case TodoActionsTypes.GET_TODOS:
-      return {
-        ...state,
-        lastUpdate: new Date().toString(),
-        loading: true,
-        error: '',
-      };
-    case TodoActionsTypes.GET_TODOS_SUCCESS:
-      return todoAdapter.addAll(action.payload, {
-        ...state,
-        lastUpdate: new Date().toString(),
-        loading: false,
-        error: '',
-      });
-    case TodoActionsTypes.GET_TODOS_ERROR:
-      return {
-        ...state,
-        lastUpdate: new Date().toString(),
-        loading: false,
-        error: action.payload,
-      };
-    case TodoActionsTypes.ADD_TODO:
-      return todoAdapter.addOne(action.payload, {
-        ...state,
-        lastUpdate: new Date().toString(),
-      });
-    case TodoActionsTypes.UPDATE_TODO:
-      return todoAdapter.updateOne(action.payload.todo, {
-        ...state,
-        lastUpdate: new Date().toString(),
-      });
-    case TodoActionsTypes.DELETE_TODO:
-      return todoAdapter.removeOne(action.payload, {
-        ...state,
-        lastUpdate: new Date().toString(),
-      });
-    default:
-      return state;
-  }
+export const reducer = createReducer(
+  initialState,
+  on(getTodos, (state: State) => ({
+    ...state,
+    lastUpdate: new Date().toString(),
+    loading: true,
+    error: '',
+  })),
+  on(getTodosSuccess, (state: State, { todos }) =>
+    todoAdapter.setAll(todos, {
+      ...state,
+      lastUpdate: new Date().toString(),
+      loading: false,
+      error: '',
+    }),
+  ),
+  on(getTodosError, (state: State, { error }) => ({
+    ...state,
+    error,
+    lastUpdate: new Date().toString(),
+    loading: false,
+  })),
+  on(addTodo, (state: State, { todo }) =>
+    todoAdapter.addOne(todo, {
+      ...state,
+      lastUpdate: new Date().toString(),
+    }),
+  ),
+  on(updateTodo, (state: State, { todo }) =>
+    todoAdapter.updateOne(todo, {
+      ...state,
+      lastUpdate: new Date().toString(),
+    }),
+  ),
+  on(deleteTodo, (state: State, { id }) =>
+    todoAdapter.removeOne(id, {
+      ...state,
+      lastUpdate: new Date().toString(),
+    }),
+  ),
+  on(deleteAllTodos, (state: State) =>
+    todoAdapter.removeAll({
+      ...state,
+      updateDate: new Date().toString(),
+    }),
+  ),
+);
+
+export function todoReducer(state: State | undefined, action: Action): any {
+  return reducer(state, action);
 }
